@@ -1,0 +1,7 @@
+sqlalchemy
+pandas
+pytest
+luigi
+lxml
+requests
+chardet
