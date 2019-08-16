@@ -4,7 +4,7 @@ import json
 import luigi
 from lr2ircrawler.bms_table import CrawlBMSTables
 from lr2ircrawler.ranking import CrawlLR2IR
-
+from lr2ircrawler.fetch import fetch
 
 class CrawlLR2IRByBMSTables(luigi.Task):
     target = luigi.Parameter()  # type: str
@@ -20,7 +20,7 @@ class CrawlLR2IRByBMSTables(luigi.Task):
         }
 
     def run(self):
-        bms_table_paths = json.load(open(self.target))
+        bms_table_paths = json.loads(fetch(self.target))
         bms_tables_task = CrawlBMSTables(
             db_url=self.db_url,
             bms_table_paths=bms_table_paths,
