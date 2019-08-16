@@ -5,3 +5,4 @@ luigi
 lxml
 requests
 chardet
+psycopg2-binary
