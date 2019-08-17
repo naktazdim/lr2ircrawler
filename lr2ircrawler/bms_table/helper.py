@@ -22,11 +22,12 @@ def fetch_bms_table(path: str) -> Tuple[str, str]:
     header_json_path = tree.xpath("/html/head/meta[@name='bmstable']/@content")[0]
     header_json_path = urljoin(path, header_json_path)
 
-    header_json = fetch(header_json_path).decode("utf-8")  # 仕様で UTF-8 と決まっている
+    header_json = fetch(header_json_path).decode("utf-8-sig")  # 仕様で UTF-8 と決まっている
+    # "utf-8" だと BOM あり UTF-8 が読めない。 utf-8-sig は BOM ありもなしもどちらも読める
 
     data_json_path = json.loads(header_json)["data_url"]
     data_json_path = urljoin(header_json_path, data_json_path)
-    data_json = fetch(data_json_path).decode("utf-8")  # 仕様で UTF-8 と決まっている
+    data_json = fetch(data_json_path).decode("utf-8-sig")  # 仕様で UTF-8 と決まっている
 
     return header_json, data_json
 
