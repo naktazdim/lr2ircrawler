@@ -1,8 +1,8 @@
 from urllib.parse import urljoin
 from io import BytesIO
 from typing import Tuple
-
 import json
+
 import lxml.html
 
 from lr2ircrawler.fetch import fetch
@@ -30,4 +30,3 @@ def fetch_bms_table(path: str) -> Tuple[str, str]:
     data_json = fetch(data_json_path).decode("utf-8-sig")  # 仕様で UTF-8 と決まっている
 
     return header_json, data_json
-

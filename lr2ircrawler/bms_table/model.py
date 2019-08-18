@@ -46,7 +46,7 @@ def get(db_url: str, bms_table_path: str) -> Dict[str, str]:
     init(db_url)
     bms_table = Session().query(BMSTable).filter(BMSTable.path == bms_table_path).first()
     return {
-            "path": bms_table.path,
-            "header_json": bms_table.header_json,
-            "data_json": bms_table.data_json
-        }
+        "path": bms_table.path,
+        "header_json": bms_table.header_json,
+        "data_json": bms_table.data_json
+    }

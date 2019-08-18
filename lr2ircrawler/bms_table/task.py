@@ -1,7 +1,7 @@
 from typing import Dict
-import luigi
-
 import json
+
+import luigi
 
 from . import model
 from .helper import fetch_bms_table

@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Callable
+from typing import Optional, Callable
 
 import sqlalchemy
 import sqlalchemy.orm

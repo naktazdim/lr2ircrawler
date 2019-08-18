@@ -6,6 +6,7 @@ from lr2ircrawler.bms_table import CrawlBMSTables
 from lr2ircrawler.ranking import CrawlLR2IR
 from lr2ircrawler.fetch import fetch
 
+
 class CrawlLR2IRByBMSTables(luigi.Task):
     target = luigi.Parameter()  # type: str
     db_url = luigi.Parameter(default="sqlite:///lr2ircrawler.db")  # type: str
