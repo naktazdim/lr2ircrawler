@@ -37,13 +37,13 @@ TARGET に収集対象を以下のように記述した JSON ファイルのパ�
 ## 出力
 OUTPUT_DIR (デフォルトはカレントディレクトリ) 以下に
 
-- bms_tables.json
+- bms_tables.json.bz2
 - records.csv.bz2
 - players.csv.bz2 
 
 の3ファイルを出力する。
 
-### bms_tables.json
+### bms_tables.json(.bz2)
 以下のようなJSONファイル
 
 - name, path は入力で指定したもの

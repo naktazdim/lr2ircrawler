@@ -1,5 +1,6 @@
 import os
 import json
+import bz2
 
 import luigi
 from lr2ircrawler.bms_table import CrawlBMSTables
@@ -15,7 +16,7 @@ class CrawlLR2IRByBMSTables(luigi.Task):
 
     def output(self):
         return {
-            "bms_tables": luigi.LocalTarget(os.path.join(self.output_dir, "bms_tables.json")),
+            "bms_tables": luigi.LocalTarget(os.path.join(self.output_dir, "bms_tables.json.bz2")),
             "records": luigi.LocalTarget(os.path.join(self.output_dir, "records.csv.bz2")),
             "players": luigi.LocalTarget(os.path.join(self.output_dir, "players.csv.bz2"))
         }
@@ -29,7 +30,7 @@ class CrawlLR2IRByBMSTables(luigi.Task):
         )
         yield bms_tables_task
 
-        bms_tables = json.load(bms_tables_task.output().open())
+        bms_tables = json.load(bz2.open(bms_tables_task.output().path, "rt"))
         bmsmd5s = [chart["md5"] for bms_table in bms_tables for chart in bms_table["data"]
                    if len(chart["md5"]) in [32, 160]]  # 第2発狂難易度表にmd5フィールドが空文字列の譜面があるので対策
 

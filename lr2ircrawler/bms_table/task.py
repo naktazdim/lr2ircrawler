@@ -1,5 +1,6 @@
 from typing import Dict
 import json
+import bz2
 
 import luigi
 
@@ -52,4 +53,4 @@ class CrawlBMSTables(luigi.Task):
                 "data": json.loads(bms_table["data_json"])
             })
 
-        json.dump(out, open(self.output_path, "w"), indent=2, ensure_ascii=False)
+        json.dump(out, bz2.open(self.output_path, "wt"), indent=2, ensure_ascii=False)
