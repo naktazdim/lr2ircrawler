@@ -33,6 +33,7 @@ class CrawlLR2IRByBMSTables(luigi.Task):
         bms_tables = json.load(bz2.open(bms_tables_task.output().path, "rt"))
         bmsmd5s = [chart["md5"] for bms_table in bms_tables for chart in bms_table["data"]
                    if len(chart["md5"]) in [32, 160]]  # 第2発狂難易度表にmd5フィールドが空文字列の譜面があるので対策
+        bmsmd5s = list(set(bmsmd5s))  # 重複除去
 
         yield CrawlLR2IR(
             db_url=self.db_url,
