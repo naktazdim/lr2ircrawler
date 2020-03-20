@@ -71,7 +71,7 @@ class OutputRecords(luigi.Task):
                 (
                     ranking
                     .assign(bmsmd5=bmsmd5)
-                    [["bmsmd5", "playerid", "clear", "combo", "pg", "gr", "minbp"]]
+                    [["bmsmd5", "playerid", "clear", "notes", "combo", "pg", "gr", "minbp"]]
                 ).to_csv(temp_path, index=False, mode="a",
                          header=(bmsmd5 == self.bmsmd5s[0]))  # 初回のみヘッダを出力
 
