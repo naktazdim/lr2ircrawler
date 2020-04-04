@@ -1,65 +1,66 @@
 [LunaticRave2 Internet Ranking (LR2IR)](http://www.dream-pro.info/~lavalse/LR2IR/search.cgi) から、指定した難易度表のランキングデータを収集する
 
+# Requirements
+
+* Python 3
+* pandas, luigi, requests
+
 # Usage
+
 [Luigi](https://luigi.readthedocs.io/en/stable/) のTaskとして実装されている。
 例えば以下のように実行する。
-```commandline
-$ export PYTHONPATH=/path/to/lr2ircrawler/:$PYTHONPATH
-$ luigi --local-scheduler \
-	--module lr2ircrawler.main CrawlLR2IRByBMSTables \
-	--target TARGET \
-	--output-dir OUTPUT_DIR \
-	--db-url DB_URL \
-	--wait WAIT
+
+```sh
+$ PYTHONPATH=/path/to/lr2ircrawler/:$PYTHONPATH luigi \
+		--local-scheduler \
+		--module lr2ircrawler Crawl \
+		--targets-json TARGET \
+		--output-dir OUTPUT_DIR
 ```
 
 ## 入力
 TARGET に収集対象を以下のように記述した JSON ファイルのパスを指定する。
 
 - キー (以下の例では "insane", "overjoy") は難易度表を識別するための好きな名前
-- URLは[次期難易度表フォーマット](http://bmsnormal2.syuriken.jp/bms_dtmanager.html)のものであること
- 
- 
+- URLは[次期難易度表フォーマット](http://bmsnormal2.syuriken.jp/bms_dtmanager.html)のものであること。次期難易度表フォーマットに沿った「コースの表」を作って指定することもできる。
+
+
 ```json
 {
 	"insane": "http://www.ribbit.xyz/bms/tables/insane.html",
-	"overjoy": "http://lr2.sakura.ne.jp/overjoy.php"
+	"overjoy": "http://lr2.sakura.ne.jp/overjoy.php",
+  "dan": "https://lr2ircrawler.s3-ap-northeast-1.amazonaws.com/targets/sp_dan_2018/index.html"
 }
 ```
 
-### オプション引数
-| オプション | デフォルト | 説明 |
-|-:|:-|:-|
-|`--output-dir`|. <br> (カレントディレクトリ) | データ出力先 |
-|`--db-url`| sqlite:///lr2ircrawler.db <br> (SQLite, カレントディレクトリ下) |処理中のデータを格納するデータベース<br>[参考リンク](http://omake.accense.com/static/doc-ja/sqlalchemy/dbengine.html#create-engine-url)|
-|`--wait`| 3.0 | LR2IRにアクセスする間隔 (秒)|
-
 ## 出力
+
 OUTPUT_DIR (デフォルトはカレントディレクトリ) 以下に
 
-- bms_tables.json.bz2
-- records.csv.bz2
-- players.csv.bz2 
+- bms_tables.json
+- items.csv
+- players.csv
+- rankings.csv
 
-の3ファイルを出力する。
+の4ファイルを出力する。
 
-### bms_tables.json(.bz2)
+### bms_tables.json
 以下のようなJSONファイル
 
-- name, path は入力で指定したもの
+- id, url は入力で指定したキーとURL
 - header, data は[次期難易度表フォーマット](http://bmsnormal2.syuriken.jp/bms_dtmanager.html)の「ヘッダ部」「データ部」
 ```json
 [
   {
-    "name": "insane",
-    "path": "http://www.ribbit.xyz/bms/tables/insane.html",
+    "id": "insane",
+    "url": "http://www.ribbit.xyz/bms/tables/insane.html",
     "header": {...},
     "data": {...}
   },
   ...
 ]
 ```
-### records.csv(.bz2)
+### records.csv
 LR2IRのAPIから得られる値そのまま。
 
 - notes は譜面のみに依存する値なのでここに格納されているべきではない (正規形でない) が、APIの出力をそのまま出力している。基本的に同じ譜面であれば全てのプレイヤのレコードに対して同じ値が入っているはずだが、LR2IR側の不具合でまれに値がずれていることがある。
@@ -75,13 +76,24 @@ LR2IRのAPIから得られる値そのまま。
 |gr|GREAT数|
 |minbp|最小BP数|
 
-### players.csv(.bz2)
+### players.csv
 | カラム名 | 説明 |
 |-----------:|:------------|
 |playerid|プレイヤの LR2 ID|
 |name|プレイヤ名|
 
+### items.csv
 
-## Requirements
-* Python 3
-* sqlalchemy, pandas, luigi, lxml, requests, chardet
+| カラム名 | 説明                           |
+| -------: | :----------------------------- |
+|   bmsmd5 | 譜面の bmsmd5                  |
+|     type | "bms" ないし "course"          |
+|   lr2_id | LR2IR の bmsid ないし courseid |
+|    title | 譜面の名前                     |
+
+## キャッシュについて
+
+環境変数 `LR2IRCRAWLER_CACHE` で指定したパス (指定しなかった場合は `./lr2ircrawler_cache.db`) にキャッシュが保存される。
+
+- すべてのファイルの生成が完了したら、キャッシュは自動で削除される。
+- 途中で失敗した場合はキャッシュが残り、単に再実行するだけで途中から再開することができる。不要な場合や最初から実行し直したい場合はキャッシュを手動で削除すること。
