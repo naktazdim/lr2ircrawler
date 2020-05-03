@@ -37,14 +37,15 @@ TARGET に収集対象を以下のように記述した JSON ファイルのパ�
 
 OUTPUT_DIR (デフォルトはカレントディレクトリ) 以下に
 
+- bms_tables_original.json
 - bms_tables.json
 - items.csv
 - players.csv
 - rankings.csv
 
-の4ファイルを出力する。
+の5ファイルを出力する。
 
-### bms_tables.json
+### bms_tables_original.json
 以下のようなJSONファイル
 
 - id, url は入力で指定したキーとURL
@@ -60,6 +61,17 @@ OUTPUT_DIR (デフォルトはカレントディレクトリ) 以下に
   ...
 ]
 ```
+### bms_tables.json
+
+bms_tables_original.jsonに以下の処理を加えたもの (必須項目のみ抽出 + α)。
+
+* ヘッダ部はname, symbol, level_orderのみ。
+  * 元データでlevel_orderが省略されている場合にもlevel_orderを補完 (仕様に従い、「データ部のレベル検出順」)
+  * 仕様ではlevel_orderにはstrとintが許容されているが、データ部のlevelに合わせて強制的にstrに変換
+* データ部はmd5, levelのみ
+  * md5: 第2発狂難易度表にmd5が空欄のものがあったりするので、md5の長さがおかしい項目は除外
+  * level: 仕様でstrと定まっているが、Overjoyのように誤ってintを入れている表があるので、強制的にstrに変換
+
 ### records.csv
 LR2IRのAPIから得られる値そのまま。
 

@@ -1,1 +1,1 @@
-from .tasks import MakeBmsTablesJson, MakeItemCsv, MakePlayersCsv, MakeRecordsCsv
+from .tasks import MakeBmsTablesJson, MakeCleansedBmsTableJson, MakeItemCsv, MakePlayersCsv, MakeRecordsCsv

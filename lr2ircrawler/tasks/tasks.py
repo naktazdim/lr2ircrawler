@@ -6,6 +6,7 @@ import pandas as pd
 
 from .lr2ircache_tasks import _CallLr2irCacheApi, _DownloadRankings
 from .safe_output_task import _SafeOutputTaskBase
+from .cleanse_bms_table import cleanse_bms_table
 
 
 class MakeBmsTablesJson(_SafeOutputTaskBase):
@@ -22,7 +23,17 @@ class MakeBmsTablesJson(_SafeOutputTaskBase):
                       for table_id, task in self.requires().items()]
         json.dump(bms_tables, open(output_path, "w"), indent=2, ensure_ascii=False)
 
-    def load(self) -> List[dict]:
+
+class MakeCleansedBmsTableJson(_SafeOutputTaskBase):
+    bms_tables_original_json = luigi.Parameter()  # type: str
+
+    def save(self, output_path: str):
+        json.dump(
+            list(map(cleanse_bms_table, json.load(open(self.bms_tables_original_json)))),
+            open(output_path, "w"), indent=2, ensure_ascii=False
+        )
+
+    def load(self) -> dict:
         return json.load(open(self.output().path))
 
 
